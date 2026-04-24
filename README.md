@@ -1,18 +1,18 @@
 # AutoEDA: Intelligent Data Quality Analyzer 🚀
 
-[cite_start]AutoEDA is a web-based platform designed to automate the early stages of data preparation for tabular datasets[cite: 35, 36]. [cite_start]Developed as a Senior Capstone Project (FENG 498) at Izmir University of Economics[cite: 1, 3], it empowers data scientists and analysts to profile data, detect anomalies, and apply cleaning operations safely.
+AutoEDA is a web-based platform designed to automate the early stages of data preparation for tabular datasets. Developed as a Senior Capstone Project (FENG 498) at Izmir University of Economics, it empowers data scientists and analysts to profile data, detect anomalies, and apply cleaning operations safely.
 
 ## 🌟 Core Philosophy
-[cite_start]Unlike black-box automated tools, AutoEDA follows a strict **"Human-in-the-Loop"** approach[cite: 63, 300]. 
-- [cite_start]**Explainability:** Every detected issue is paired with a clear, rule-based or LLM-supported cleaning recommendation[cite: 25, 26, 62].
-- [cite_start]**Safety First:** The system never modifies the original dataset blindly[cite: 38]. [cite_start]Users must explicitly approve or reject suggested actions before any transformation occurs[cite: 63, 64].
-- [cite_start]**Non-Destructive:** The original uploaded file is preserved; cleaning actions generate a versioned, safe output[cite: 313].
+Unlike black-box automated tools, AutoEDA follows a strict **"Human-in-the-Loop"** approach. 
+- **Explainability:** Every detected issue is paired with a clear, rule-based or LLM-supported cleaning recommendation.
+- **Safety First:** The system never modifies the original dataset blindly. Users must explicitly approve or reject suggested actions before any transformation occurs.
+- **Non-Destructive:** The original uploaded file is preserved; cleaning actions generate a versioned, safe output.
 
 ## 🛠️ Technology Stack
 The project utilizes a modern, decoupled, and asynchronous architecture:
 - **Backend:** FastAPI (Python) for high-performance, asynchronous API routing.
-- [cite_start]**Data Engine:** Pandas, NumPy, and Scikit-learn for profiling and statistical analysis[cite: 219].
-- [cite_start]**Task Queue:** Celery + Redis for asynchronous processing of heavy datasets without blocking the API[cite: 344, 345].
+- **Data Engine:** Pandas, NumPy, and Scikit-learn for profiling and statistical analysis.
+- **Task Queue:** Celery + Redis for asynchronous processing of heavy datasets without blocking the API.
 - **Database:** PostgreSQL (Port: 5433) managed via SQLAlchemy ORM and Alembic migrations.
 - **Frontend:** React (Next.js/Vite) for an interactive, state-managed user interface.
 
