@@ -1,0 +1,6 @@
+ID,Name,Age,Salary,Department
+1,John,28,50000,IT
+2,Jane,,60000,HR
+3,Mike,35,,Sales
+4,Anna,42,75000,Marketing
+5,Tom,,,I
