@@ -1,4 +1,6 @@
-from fastapi import APIRouter, status
+import os
+from fastapi import APIRouter, status, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
 
@@ -30,3 +32,18 @@ async def execute_cleaning(dataset_id: int, payload: ExecuteRequest):
         "message": "Cleaning task accepted and started asynchronously.",
         "task_id": task.id
     }
+
+
+@router.get("/reports/{report_name}")
+async def download_report(report_name: str):
+    """
+    Serves the generated HTML report file to the client.
+    """
+    if not os.path.exists(report_name):
+        raise HTTPException(status_code=404, detail="Report not found")
+        
+    return FileResponse(
+        path=report_name,
+        media_type="text/html",
+        filename=report_name
+    )

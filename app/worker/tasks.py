@@ -15,35 +15,32 @@ def execute_cleaning_task(dataset_id: int, input_file_path: str, approved_action
     
     # Construct an output path based on the input path
     base, ext = os.path.splitext(input_file_path)
+    dt_name = os.path.basename(base)
     output_file_path = f"{base}_cleaned{ext}"
     
     try:
         # Step 1: Execute Cleaning
-        post_score = apply_cleaning(
+        stats = apply_cleaning(
             input_path=input_file_path, 
             output_path=output_file_path, 
             approved_actions=approved_actions
         )
         
-        # We mock a pre-score here. Typically evaluated earlier in the pipeline.
-        pre_score = 65.0
-        
         # Step 2: Generate Report
-        html_report = generate_report(
-            dataset_name=f"Dataset #{dataset_id}",
-            pre_score=pre_score,
-            post_score=post_score,
+        report_path = generate_report(
+            dataset_name=dt_name,
+            stats=stats,
             applied_actions=approved_actions
         )
         
-        logger.info(f"Successfully completed cleaning for dataset_id {dataset_id}. Post cleaning score: {post_score}.")
+        logger.info(f"Successfully completed cleaning for {dt_name}. Final score: {stats['post_cleaning_score']}.")
         
         # Returning task summary data for celery result backend
         return {
-            "status": "success",
+            "status": "SUCCESS",
             "dataset_id": dataset_id,
-            "post_score": post_score,
-            "report_length": len(html_report),
+            "report_path": report_path,
+            "stats": stats,
             "output_file": output_file_path
         }
         
