@@ -1,0 +1,12 @@
+ID,Name,Age,Salary,Department,Score
+1,alice,29,45000,it,0.7
+2,ALICE,999,-50000,IT,0.9
+3,Bob,Unknown,120000,Sales,bad
+4,carol,41,78000,hr,1.1
+5,CAROL,,90000,HR,0.1
+6,dave,35,Unknown,Finance,0.5
+7,eve,27,52000,finance,0.4
+8,EVE,999,250000,FINANCE,1.9
+9,frank,19,30000,marketing,0.2
+10,FRANK,22,-50000,Marketing,-3.1
+10,FRANK,22,-50000,Marketing,-3.1

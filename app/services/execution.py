@@ -21,6 +21,8 @@ def apply_cleaning(input_path: str, output_path: str, approved_actions: list) ->
     for action_dict in approved_actions:
         action = action_dict.get("action")
         column = action_dict.get("column")
+        lower_bound = action_dict.get("lower_bound")
+        upper_bound = action_dict.get("upper_bound")
         
         if not action:
             continue
@@ -38,22 +40,54 @@ def apply_cleaning(input_path: str, output_path: str, approved_actions: list) ->
             df.drop(columns=[column], inplace=True)
             logger.info(f"Dropped column: {column}")
         elif action == "fill_median":
-            if pd.api.types.is_numeric_dtype(df[column]):
-                median_val = df[column].median()
-                df[column].fillna(median_val, inplace=True)
+            numeric_series = pd.to_numeric(df[column], errors="coerce")
+            if numeric_series.notna().sum() > 0:
+                median_val = numeric_series.median()
+                df[column] = numeric_series.fillna(median_val)
                 logger.info(f"Filled missing values in '{column}' with median ({median_val})")
             else:
                 logger.warning(f"Cannot fill median on non-numeric column '{column}'.")
         elif action == "fill_mean":
-            if pd.api.types.is_numeric_dtype(df[column]):
-                mean_val = df[column].mean()
-                df[column].fillna(mean_val, inplace=True)
+            numeric_series = pd.to_numeric(df[column], errors="coerce")
+            if numeric_series.notna().sum() > 0:
+                mean_val = numeric_series.mean()
+                df[column] = numeric_series.fillna(mean_val)
                 logger.info(f"Filled missing values in '{column}' with mean ({mean_val})")
             else:
                 logger.warning(f"Cannot fill mean on non-numeric column '{column}'.")
+        elif action == "fill_mode":
+            mode_series = df[column].mode(dropna=True)
+            if not mode_series.empty:
+                mode_val = mode_series.iloc[0]
+                df[column] = df[column].fillna(mode_val)
+                logger.info(f"Filled missing values in '{column}' with mode ({mode_val})")
+            else:
+                logger.warning(f"Cannot fill mode on column '{column}' because mode is empty.")
         elif action == "drop_missing_rows":
             df.dropna(subset=[column], inplace=True)
             logger.info(f"Dropped rows with missing values in column '{column}'")
+        elif action == "clip_outliers":
+            numeric_series = pd.to_numeric(df[column], errors="coerce")
+            if numeric_series.notna().sum() == 0:
+                logger.warning(f"Cannot clip outliers on non-numeric column '{column}'.")
+                continue
+            if lower_bound is None or upper_bound is None:
+                logger.warning(f"clip_outliers for '{column}' skipped due to missing bounds.")
+                continue
+            df[column] = numeric_series.clip(lower=float(lower_bound), upper=float(upper_bound))
+            logger.info(f"Clipped outliers in '{column}' to range [{lower_bound}, {upper_bound}]")
+        elif action == "drop_outliers":
+            numeric_series = pd.to_numeric(df[column], errors="coerce")
+            if numeric_series.notna().sum() == 0:
+                logger.warning(f"Cannot drop outliers on non-numeric column '{column}'.")
+                continue
+            if lower_bound is None or upper_bound is None:
+                logger.warning(f"drop_outliers for '{column}' skipped due to missing bounds.")
+                continue
+            df[column] = numeric_series
+            valid_mask = numeric_series.between(float(lower_bound), float(upper_bound), inclusive="both") | numeric_series.isna()
+            df = df[valid_mask].copy()
+            logger.info(f"Dropped outlier rows in '{column}' outside [{lower_bound}, {upper_bound}]")
 
     # Save cleaned file
     logger.info(f"Saving cleaned dataset to {output_path}")

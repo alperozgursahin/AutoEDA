@@ -1,0 +1,76 @@
+ID,Name,Age,Salary,Score,City,Department,ActiveFlag
+1,Alice,,55000,Unknown,LA,Finance,No
+2,alice,32,73000,,New York,sales,yes
+3,Alice,32,9999999,Unknown,New York,finance,No
+4,alice,29,42000,2.2,los angeles,Finance,
+5,alice,25,-50000,,Los Angeles,Finance,yes
+6,Alice,41,73000,Unknown,new york,sales,No
+7,Alice,-5,-50000,2.2,LA,finance,No
+8,Alice,999,73000,0.2,los angeles,HR,No
+9,BOB,25,-50000,0.5,Los Angeles,HR,no
+10,ALICE,,9999999,,Los Angeles,FINANCE,Yes
+11,BOB,41,,2.2,new york,Finance,YES
+12,BOB,36,73000,-2.5,Los Angeles,FINANCE,yes
+13,ALICE,32,-50000,Unknown,new york,,Yes
+14,BOB,36,9999999,0.2,LA,Finance,No
+15,Bob,,73000,-2.5, NY ,sales,No
+16,Bob,36,42000,2.2,New York,FINANCE,
+17,Carol,32,42000,-2.5,LA,FINANCE,No
+18,ALICE,36,73000,-2.5,Los Angeles,HR,yes
+19,Bob,36,73000,0.5,los angeles,Finance,yes
+20,alice,999,120000,0.8,new york,HR,no
+21,Bob,29,120000,Unknown,New York,finance,no
+22,BOB,-5,55000,2.2,Los Angeles,,YES
+23,alice,29,73000,-2.5,Los Angeles,finance,yes
+24,Alice,41,55000,0.5,LA,finance,no
+25,Bob,41,73000,0.8,New York,finance,No
+26,Carol,,-50000,, NY ,finance,No
+27,Carol,25,9999999,2.2,,,No
+28,Bob,29,9999999,Unknown,Los Angeles,Finance,
+29,Bob,29,42000,0.5,New York,finance,Yes
+30,Alice,32,73000,,New York,Finance,No
+31,Alice,41,-50000,0.2, NY ,sales,yes
+32,ALICE,999,-50000,Unknown,new york,HR,YES
+33,Bob,,9999999,0.2,New York,,no
+34,Alice,36,9999999,0.8,New York,finance,
+35,Carol,,,0.8,Los Angeles,,Yes
+36,Carol,25,55000,, NY ,finance,No
+37,Alice,25,120000,, NY ,HR,
+38,alice,-5,-50000,0.8,new york,FINANCE,No
+39,alice,,,0.5,los angeles,,Yes
+40,BOB,29,,2.2,new york,finance,no
+41,ALICE,,,0.2,New York,,no
+42,Bob,-5,55000,-2.5,los angeles,FINANCE,
+43,alice,,73000,0.2,new york,Finance,no
+44,BOB,999,73000,0.5,Los Angeles,sales,yes
+45,Alice,36,,0.8,,HR,
+46,alice,32,9999999,2.2,LA,,no
+47,Alice,41,9999999,2.2,LA,FINANCE,
+48,Carol,29,9999999,Unknown,LA,Finance,Yes
+49,Bob,41,55000,0.2,new york,sales,
+50,Carol,41,-50000,2.2,los angeles,Sales,YES
+51,Alice,41,-50000,,new york,Finance,
+52,alice,32,-50000,-2.5,new york,Sales,Yes
+53,alice,25,73000,0.5, NY ,sales,No
+54,alice,,73000,,Los Angeles,,yes
+55,BOB,,9999999,-2.5,los angeles,,no
+56,Alice,41,-50000,0.5,los angeles,sales,no
+57,alice,41,-50000,0.2,,,Yes
+58,BOB,41,9999999,,LA,Finance,yes
+59,Bob,,,,los angeles,sales,yes
+60,Alice,25,55000,0.5, NY ,Finance,No
+61,Bob,36,-50000,0.2,,Finance,YES
+62,BOB,999,,0.8,Los Angeles,sales,no
+63,alice,999,,, NY ,sales,no
+64,ALICE,41,9999999,0.2,Los Angeles,Sales,yes
+65,ALICE,999,9999999,0.2,new york,HR,yes
+66,alice,41,,-2.5,LA,FINANCE,YES
+67,Bob,41,9999999,0.5,LA,Finance,no
+68,Carol,41,,2.2,new york,finance,no
+69,ALICE,29,73000,Unknown,new york,FINANCE,yes
+70,Bob,,42000,0.8,los angeles,Sales,
+6,Alice,41,73000,Unknown,new york,sales,No
+13,ALICE,32,-50000,Unknown,new york,,Yes
+21,Bob,29,120000,Unknown,New York,finance,no
+6,Alice,41,73000,Unknown,new york,sales,No
+31,Alice,41,-50000,0.2, NY ,sales,yes
