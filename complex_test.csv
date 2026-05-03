@@ -1,0 +1,71 @@
+ID,Name,Age,Salary,Department,StartDate,IsActive,Score,City,Notes
+1,Jane,25,35000,,2022-04-08,true,-12.5,NY,ok
+2,David,67,35000,IT,2020-04-08,true,99.9,LA,
+3,David,120,99000,Sales,2020-03-23,false,0.8,Chicago,needs review
+4,Alice,56,35000,IT,2023-02-12,false,99.9,Chicago,
+5,Jane,120,,Finance,2020-07-03,false,-12.5,Tokyo,critical
+6,Bob,34,150000,IT,2020-11-08,false,,NY,needs review
+7,David,,76000,Sales,2023-11-27,false,0.5,Chicago,critical
+8,Ian,41,150000,,2025-02-20,,-12.5,LA,
+9,Frank,34,48000,Marketing,,false,0.8,,needs review
+10,David,22,,HR,2020-06-13,false,0.1,LA,critical
+11,Jane,120,76000,,2023-03-09,true,0.5,,critical
+12,Alice,67,99000,Marketing,2022-04-05,false,,NY,
+13,Ian,25,48000,,2021-11-14,true,1.2,Berlin,
+14,Frank,,52000,Finance,2020-11-24,true,-12.5,Tokyo,critical
+15,Ian,25,,Sales,2023-03-15,true,-12.5,,critical
+16,Jane,29,99000,IT,2025-05-27,,-12.5,Tokyo,
+17,Alice,34,48000,Sales,2021-09-25,true,99.9,Chicago,
+18,Jane,25,52000,Sales,,true,,NY,needs review
+19,Ian,25,35000,,2023-02-25,true,0.5,,
+20,David,29,,Sales,2024-10-14,true,99.9,,
+21,Bob,,150000,Sales,2023-11-21,false,1.2,Tokyo,
+22,Bob,34,48000,IT,2022-01-19,true,99.9,LA,ok
+23,David,22,48000,IT,2020-06-03,true,0.8,,
+24,Grace,29,150000,Finance,2024-08-08,,,Berlin,
+25,Alice,34,,IT,2020-11-14,false,1.2,Berlin,
+26,Ian,25,35000,Marketing,2025-06-26,true,0.5,LA,needs review
+27,Bob,120,48000,Marketing,,true,0.8,Berlin,needs review
+28,Carol,,76000,Finance,2020-01-21,true,0.1,LA,
+29,Eva,67,76000,Marketing,2021-07-02,true,1.2,NY,
+30,Eva,120,,Sales,2023-12-24,false,,LA,needs review
+31,Ian,34,35000,Finance,2025-09-02,false,0.1,NY,
+32,David,29,35000,Finance,2020-03-03,,99.9,NY,
+33,Jane,67,35000,Finance,2021-10-20,true,99.9,NY,
+34,Eva,56,52000,HR,2025-12-11,true,0.8,Berlin,needs review
+35,Bob,,,Marketing,2022-02-01,false,99.9,Tokyo,ok
+36,Bob,34,99000,Sales,,true,,Chicago,
+37,Ian,34,52000,Sales,2021-08-27,false,99.9,,ok
+38,Eva,41,150000,IT,2021-05-04,true,-12.5,Tokyo,needs review
+39,Alice,41,99000,HR,2025-06-07,false,99.9,Berlin,critical
+40,Carol,25,,,2023-05-02,,0.1,Chicago,
+41,Bob,41,48000,,2023-09-23,false,99.9,NY,ok
+42,Grace,,150000,HR,2024-01-27,false,,Tokyo,needs review
+43,Frank,29,35000,Sales,2022-01-12,true,-12.5,LA,ok
+44,Alice,67,99000,,2021-04-28,true,0.5,Berlin,
+45,Eva,29,,,,false,1.2,,needs review
+46,Helen,29,9999999,,2020-07-28,true,1.2,LA,needs review
+47,Bob,56,52000,HR,2021-01-22,true,1.2,Chicago,critical
+48,Frank,41,52000,,2024-07-22,,,Tokyo,
+49,Frank,,35000,IT,2022-03-19,false,0.1,NY,
+50,Alice,56,,Marketing,2024-09-04,false,99.9,LA,critical
+51,Frank,67,35000,Finance,2024-11-24,true,0.8,Berlin,ok
+52,Frank,56,150000,IT,2025-05-17,false,-12.5,Berlin,
+53,Jane,67,150000,Sales,2024-03-07,false,-12.5,Berlin,needs review
+54,David,41,76000,Finance,,true,,Chicago,critical
+55,Ian,67,,Finance,2024-11-11,false,1.2,Berlin,needs review
+56,Jane,,76000,,2021-11-03,,0.8,Tokyo,
+57,David,56,35000,HR,2025-05-08,true,0.5,NY,ok
+58,Helen,120,99000,IT,2023-07-21,true,-12.5,,
+59,Ian,67,48000,HR,2025-12-01,true,1.2,LA,needs review
+60,Carol,120,,IT,2024-04-28,true,,Berlin,
+61,Ian,120,150000,Finance,2024-10-11,false,99.9,,
+62,David,120,48000,,2023-08-09,true,-12.5,Chicago,
+63,Eva,,52000,Marketing,,true,-12.5,Chicago,needs review
+64,Carol,56,52000,Finance,2020-03-05,,0.5,Berlin,
+65,Grace,34,,IT,2023-07-11,false,1.2,NY,needs review
+11,Jane,120,76000,,2023-03-09,true,0.5,,critical
+21,Bob,,150000,Sales,2023-11-21,false,1.2,Tokyo,
+31,Ian,34,35000,Finance,2025-09-02,false,0.1,NY,
+11,Jane,120,76000,,2023-03-09,true,0.5,,critical
+21,Bob,,150000,Sales,2023-11-21,false,1.2,Tokyo,
