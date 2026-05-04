@@ -44,5 +44,57 @@ def evaluate_missing_column(column: dict, row_count: int) -> dict | None:
 
     missing_ratio = missing_count / row_count
 
-    print(column["column_name"], missing_ratio)
-    return None
+    column_name = column.get("column_name")
+    data_type = column.get("data_type", "unknown")
+
+    if missing_ratio == 0:
+        return None
+
+    if missing_ratio <= 0.05:
+        severity = "low"
+        if data_type == "numeric":
+            suggested_action = "fill_mean"
+            reason_code = "MV_LOW_NUMERIC"
+        elif data_type == "categorical":
+            suggested_action = "fill_mode"
+            reason_code = "MV_LOW_CATEGORICAL"
+        else:
+            suggested_action = "review_column"
+            reason_code = "MV_LOW_UNKNOWN_TYPE"
+
+    elif missing_ratio <= 0.30:
+        severity = "medium"
+        if data_type == "numeric":
+            suggested_action = "fill_median"
+            reason_code = "MV_MEDIUM_NUMERIC"
+        elif data_type == "categorical":
+            suggested_action = "fill_mode"
+            reason_code = "MV_MEDIUM_CATEGORICAL"
+        else:
+            suggested_action = "review_column"
+            reason_code = "MV_MEDIUM_UNKNOWN_TYPE"
+
+    elif missing_ratio <= 0.60:
+        severity = "high"
+        suggested_action = "review_column"
+        reason_code = "MV_HIGH_RATIO"
+
+    else:
+        severity = "critical"
+        suggested_action = "drop_column"
+        reason_code = "MV_CRITICAL_RATIO"
+
+    return {
+        "issue_id": f"missing_values_{column_name}",
+        "column": column_name,
+        "issue_type": "missing_values",
+        "severity": severity,
+        "suggested_action": suggested_action,
+        "reason_code": reason_code,
+        "metrics": {
+            "missing_count": missing_count,
+            "missing_ratio": round(missing_ratio, 4),
+            "row_count": row_count
+        },
+        "requires_user_approval": True
+    }
