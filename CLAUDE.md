@@ -86,6 +86,42 @@ The Alembic env ([alembic/env.py](alembic/env.py)) imports all models via `app/m
 ## What Is Not Yet Implemented
 
 The following services are architectural placeholders not yet built:
+
+## Detection & Suggestion Module Work Split
+
+This section defines the team ownership for the rule-based detection and LLM-backed suggestion generation module.
+
+The detection layer must never mutate the original dataset. It only detects data quality issues and generates suggestion objects. Cleaning is executed later only after explicit user approval through the existing async execution flow.
+
+### Shared Detection Principles
+
+All detection rules must follow these principles:
+
+- Detection rules must be deterministic and rule-based.
+- Detection rules must not directly clean, modify, or overwrite datasets.
+- Detection rules must not call Celery directly.
+- Detection rules must not call FastAPI route handlers.
+- Detection rules should return structured issue/suggestion objects.
+- Every suggestion must include `requires_user_approval: true`.
+- The LLM must not decide the cleaning action. The rule engine decides the action; the LLM only explains it in plain English.
+- Original uploaded files must always remain unchanged.
+- Rules should work with mock profiling data until the profiling pipeline is fully implemented.
+
+### Suggested Directory Structure
+
+Use a separated rule-file structure to avoid merge conflicts between team members:
+
+```text
+app/services/detection/
+├── missing_rules.py          # Doğa
+├── validity_rules.py         # Doğa
+├── structural_rules.py       # Benhur
+├── statistical_rules.py      # Benhur
+├── rule_registry.py          # Shared, edit carefully
+└── contracts.md              # Shared rule/output contracts
+app/services/llm_service.py          # Doğa
+app/services/suggestion_service.py   # Shared integration layer
+
 - Dataset upload endpoint and file ingestion
 - Data profiling trigger and `profiling_result` population
 - LLM-backed suggestion generation (`explanation` field on `CleaningSuggestionsLog`)
