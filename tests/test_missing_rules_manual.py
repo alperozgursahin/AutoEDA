@@ -3,7 +3,7 @@ import pandas as pd
 from app.services.detection.missing_rules import detect_missing_values
 
 
-def infer_data_type(series):
+def infer_data_type(series): #Bir sütunun tipini tahmin eder
     # Boşları temizle
     non_null = series.dropna()
 

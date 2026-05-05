@@ -1,0 +1,69 @@
+import pandas as pd
+
+from app.services.detection.validity_rules import detect_type_mismatches
+
+EXPECTED_TYPES = {
+    "ID": "numeric",
+    "Age": "numeric",
+    "Salary": "numeric"
+}
+
+
+def infer_data_type(series):
+    non_null = series.dropna()
+
+    if len(non_null) == 0:
+        return "unknown"
+
+    unique_values = set(str(v).lower() for v in non_null.unique())
+
+    if unique_values.issubset({"true", "false"}):
+        return "categorical"
+
+    numeric_series = pd.to_numeric(non_null, errors="coerce")
+    numeric_ratio = numeric_series.notna().sum() / len(non_null)
+
+    if numeric_ratio > 0.8:
+        return "numeric"
+
+    return "categorical"
+
+
+def build_validity_profiles(df):
+    columns = []
+
+    for column_name in df.columns:
+        data_type = EXPECTED_TYPES.get(column_name, infer_data_type(df[column_name]))
+        invalid_count = 0
+
+        if data_type == "numeric":
+            non_null = df[column_name].dropna()
+            numeric_series = pd.to_numeric(non_null, errors="coerce")
+
+            invalid_count = int(numeric_series.isna().sum())
+
+        columns.append({
+            "column_name": column_name,
+            "expected_type": data_type,
+            "invalid_count": invalid_count
+        })
+
+    return columns
+
+
+# CSV oku
+df = pd.read_csv("test.csv")
+
+row_count = len(df)
+
+# validity profiling
+validity_columns = build_validity_profiles(df)
+
+# detection çalıştır
+issues = detect_type_mismatches(validity_columns, row_count)
+
+print("Row count:", row_count)
+print("\nType Mismatch Issues:")
+
+for issue in issues:
+    print(issue)

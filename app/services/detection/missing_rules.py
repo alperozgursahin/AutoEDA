@@ -26,7 +26,7 @@ def detect_missing_values(columns: list, row_count: int) -> list:
 
     return issues
 
-def evaluate_missing_column(column: dict, row_count: int) -> dict | None:
+def evaluate_missing_column(column: dict, row_count: int) -> dict | None: # rule engine
     """
     Evaluates a single column for missing values.
 
