@@ -25,3 +25,19 @@ export async function fetchVisualizations(datasetId, inputFilePath) {
   return response.data;
 }
 
+export async function uploadDataset(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post("/datasets/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data; // { dataset_id, file_path, filename }
+}
+
+export async function fetchDetect(datasetId, filePath) {
+  const response = await api.post(`/datasets/${datasetId}/detect`, {
+    input_file_path: filePath,
+  });
+  return response.data; // { dataset_id, total_issues, total_suggestions, suggestions }
+}
+
