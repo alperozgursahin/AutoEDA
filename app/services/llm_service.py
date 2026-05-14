@@ -74,6 +74,138 @@ def generate_fallback_explanation(issue: dict) -> dict:
             )
         }
 
+    # ── Benhur's structural & statistical issue types ────────────────────────
+    # For these types the rule engine already produces a user-friendly description.
+    # We reuse it as the explanation and add issue-specific reasoning / warnings.
+
+    if issue_type == "DUPLICATE_ROWS":
+        return {
+            "explanation": issue.get("description", f"Duplicate rows were detected in the dataset."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Duplicate rows inflate statistics, distort frequency counts, "
+                "and can cause data leakage in model training."
+            ),
+            "user_warning": (
+                "Dropping duplicates is irreversible. "
+                "Verify the flagged rows are true duplicates and not legitimate repeated observations."
+            ),
+        }
+
+    if issue_type == "CONSTANT_COLUMN":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' has only one unique value."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Columns with zero variance carry no information and add unnecessary noise to analysis."
+            ),
+            "user_warning": (
+                "Verify this column is not intentionally constant "
+                "(e.g., a version flag or dataset-level metadata) before dropping it."
+            ),
+        }
+
+    if issue_type == "ALL_NULL_COLUMN":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' contains no values at all."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "A completely empty column cannot contribute to any analysis or model."
+            ),
+            "user_warning": (
+                "Ensure this column is not expected to be populated by a future data pipeline "
+                "before approving the drop."
+            ),
+        }
+
+    if issue_type == "HIGH_CARDINALITY":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' has very high cardinality."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "High-cardinality string columns (IDs, free text) cannot be used directly "
+                "in most statistical analyses or machine learning models."
+            ),
+            "user_warning": (
+                "Confirm this is not a meaningful low-cardinality column "
+                "before dropping it — check whether the unique count is expected."
+            ),
+        }
+
+    if issue_type == "MIXED_TYPES":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' contains mixed data types."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Mixed-type columns cause silent coercion errors in numeric operations "
+                "and unreliable aggregations."
+            ),
+            "user_warning": (
+                "Inspect the non-numeric values before approving — "
+                "they may represent valid categories or data entry errors that need manual correction."
+            ),
+        }
+
+    if issue_type == "OUTLIERS_IQR":
+        metrics_str = ""
+        lower = metrics.get("lower_bound")
+        upper = metrics.get("upper_bound")
+        if lower is not None and upper is not None:
+            metrics_str = f" Proposed clip range: [{lower:.4g}, {upper:.4g}]."
+        return {
+            "explanation": issue.get("description", f"Column '{column}' contains outliers detected by IQR."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Outliers distort means, inflate variance, and can destabilize model training."
+                f"{metrics_str}"
+            ),
+            "user_warning": (
+                "Review the proposed clip bounds — they are derived from quartiles "
+                "and may need adjustment for your specific domain."
+            ),
+        }
+
+    if issue_type == "SKEWED_DISTRIBUTION":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' has a heavily skewed distribution."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Heavy skew biases mean-based statistics and can degrade gradient-based model performance."
+            ),
+            "user_warning": (
+                "Clipping reduces the tail effect but does not eliminate skew. "
+                "Consider a log or square-root transformation as an alternative."
+            ),
+        }
+
+    if issue_type == "LOW_VARIANCE":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' has very low variance."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Near-constant numeric columns provide minimal discriminating signal "
+                "for statistical analysis or model training."
+            ),
+            "user_warning": (
+                "Verify the column is not a deliberately scaled or normalized feature "
+                "before approving the drop."
+            ),
+        }
+
+    if issue_type == "HIGH_CORRELATION":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' is highly correlated with another column."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Highly correlated columns introduce multicollinearity, "
+                "inflating model variance and making coefficient interpretation unreliable."
+            ),
+            "user_warning": (
+                "Dropping a column is permanent. Confirm which of the correlated pair "
+                "is more meaningful to retain before approving."
+            ),
+        }
+
     # Generic Fallback
     return {
         "explanation": (

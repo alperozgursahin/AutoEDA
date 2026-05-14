@@ -1,14 +1,21 @@
 import os
-from fastapi import APIRouter, status, HTTPException, Query
+import uuid
+import pandas as pd
+from fastapi import APIRouter, status, HTTPException, Query, UploadFile, File
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 
 from app.worker.tasks import execute_cleaning_task
 from app.services.visualization import build_visualization_data
+from app.services.detection.rule_registry import run_all_rules
+from app.services.suggestion_service import build_suggestions_from_issues
 
 router = APIRouter(prefix="/datasets", tags=["Datasets"])
 DATASET_INPUT_PATHS: Dict[int, str] = {}
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 class ActionItem(BaseModel):
     action: str
@@ -19,6 +26,39 @@ class ActionItem(BaseModel):
 class ExecuteRequest(BaseModel):
     input_file_path: str
     approved_actions: List[ActionItem]
+
+class DetectRequest(BaseModel):
+    input_file_path: str
+    expected_types: Optional[Dict[str, str]] = None
+
+@router.post("/upload", status_code=status.HTTP_201_CREATED)
+async def upload_dataset(file: UploadFile = File(...)):
+    """
+    Accepts a CSV file, saves it to the uploads directory, and returns a
+    dataset_id and the server-side file path for use in subsequent /detect calls.
+    """
+    if not file.filename or not file.filename.endswith(".csv"):
+        raise HTTPException(status_code=422, detail="Only CSV files are accepted.")
+
+    dataset_id = int(uuid.uuid4().int % 10**9)
+    safe_name = f"{dataset_id}_{file.filename}"
+    file_path = os.path.join(UPLOAD_DIR, safe_name)
+
+    contents = await file.read()
+    if len(contents) == 0:
+        raise HTTPException(status_code=422, detail="Uploaded file is empty.")
+
+    with open(file_path, "wb") as f:
+        f.write(contents)
+
+    DATASET_INPUT_PATHS[dataset_id] = file_path
+
+    return {
+        "dataset_id": dataset_id,
+        "file_path": file_path,
+        "filename": file.filename,
+    }
+
 
 @router.post("/{dataset_id}/execute", status_code=status.HTTP_202_ACCEPTED)
 async def execute_cleaning(dataset_id: int, payload: ExecuteRequest):
@@ -52,6 +92,36 @@ async def download_report(report_name: str):
         media_type="text/html",
         filename=report_name
     )
+
+
+@router.post("/{dataset_id}/detect", status_code=status.HTTP_200_OK)
+async def detect_issues(dataset_id: int, payload: DetectRequest):
+    """
+    Runs all detection rules on the dataset and returns frontend-ready suggestions.
+    Synchronous for MVP; move to Celery when dataset sizes require it.
+    """
+    if not os.path.exists(payload.input_file_path):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Dataset file not found: {payload.input_file_path}",
+        )
+
+    DATASET_INPUT_PATHS[dataset_id] = payload.input_file_path
+
+    try:
+        df = pd.read_csv(payload.input_file_path)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Failed to read CSV: {e}")
+
+    issues = run_all_rules(df, payload.expected_types)
+    suggestions = build_suggestions_from_issues(issues)
+
+    return {
+        "dataset_id": dataset_id,
+        "total_issues": len(issues),
+        "total_suggestions": len(suggestions),
+        "suggestions": suggestions,
+    }
 
 
 @router.get("/{dataset_id}/visualizations")

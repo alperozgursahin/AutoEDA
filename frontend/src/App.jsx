@@ -1,6 +1,6 @@
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Bot, CloudUpload, FileText, Gauge, RefreshCcw, Sparkles, Type, Copy } from "lucide-react";
-import { executeCleaning, fetchReportHtml, fetchVisualizations } from "./api";
+import { executeCleaning, fetchReportHtml, fetchVisualizations, uploadDataset, fetchDetect } from "./api";
 
 const MAX_FILE_SIZE_MB = 50;
 const MAX_FILE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -19,6 +19,9 @@ function VisualizationFallback() {
   );
 }
 
+// NOTE: Previous client-side mock — kept for fallback reference, not called anymore.
+// Replaced by real backend integration (uploadDataset → fetchDetect).
+/*
 function generateMockSuggestionsFromCsv(csvText) {
   const lines = csvText
     .split(/\r?\n/)
@@ -156,6 +159,44 @@ function generateMockSuggestionsFromCsv(csvText) {
 
   return suggestions;
 }
+*/
+
+const ISSUE_TYPE_TO_CATEGORY = {
+  missing_values: "missing_values",
+  type_mismatch: "formatting_types",
+  DUPLICATE_ROWS: "duplicates",
+  CONSTANT_COLUMN: "formatting_types",
+  ALL_NULL_COLUMN: "missing_values",
+  HIGH_CARDINALITY: "formatting_types",
+  MIXED_TYPES: "formatting_types",
+  OUTLIERS_IQR: "outliers",
+  SKEWED_DISTRIBUTION: "outliers",
+  LOW_VARIANCE: "formatting_types",
+  HIGH_CORRELATION: "formatting_types",
+};
+
+const ACTION_OPTIONS = {
+  fill_median: ["fill_mean", "fill_median", "fill_mode", "drop_missing_rows"],
+  fill_mean: ["fill_mean", "fill_median", "fill_mode", "drop_missing_rows"],
+  drop_missing_rows: ["fill_mean", "fill_median", "fill_mode", "drop_missing_rows"],
+  clip_outliers: ["clip_outliers", "drop_outliers"],
+  drop_outliers: ["clip_outliers", "drop_outliers"],
+};
+
+function mapBackendSuggestion(s) {
+  const action = s.suggested_action;
+  return {
+    id: s.suggestion_id,
+    action,
+    column: s.column || "Dataset",
+    reason: s.explanation,
+    type: s.issue_type,
+    category: ISSUE_TYPE_TO_CATEGORY[s.issue_type] || "formatting_types",
+    actionOptions: ACTION_OPTIONS[action] || [action],
+    lower_bound: s.metrics?.lower_bound,
+    upper_bound: s.metrics?.upper_bound,
+  };
+}
 
 function parseReportStats(html) {
   const parser = new DOMParser();
@@ -206,6 +247,7 @@ function App() {
   const [visualizationData, setVisualizationData] = useState(null);
   const [visualizationError, setVisualizationError] = useState("");
   const [isVisualizationLoading, setIsVisualizationLoading] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
   const dragCounterRef = useRef(0);
 
   const approvedActions = useMemo(
@@ -228,21 +270,29 @@ function App() {
   );
 
   async function buildSuggestionsFromFile(nextFile) {
-    const content = await nextFile.text();
-    const generated = generateMockSuggestionsFromCsv(content);
-    setSuggestions(generated);
-    setDecisionMap(
-      generated.reduce((acc, item) => {
-        acc[item.id] = "approved";
-        return acc;
-      }, {}),
-    );
-    setSelectedActionMap(
-      generated.reduce((acc, item) => {
-        acc[item.id] = item.action;
-        return acc;
-      }, {}),
-    );
+    setIsDetecting(true);
+    setStatusMessage("Uploading and analyzing dataset...");
+    setStatusType("loading");
+    try {
+      const { dataset_id, file_path } = await uploadDataset(nextFile);
+      setDatasetId(dataset_id);
+      setInputFilePath(file_path);
+      const { suggestions: raw } = await fetchDetect(dataset_id, file_path);
+      const mapped = raw.map(mapBackendSuggestion);
+      setSuggestions(mapped);
+      setDecisionMap(mapped.reduce((acc, item) => { acc[item.id] = "approved"; return acc; }, {}));
+      setSelectedActionMap(mapped.reduce((acc, item) => { acc[item.id] = item.action; return acc; }, {}));
+      setStatusMessage("Ready");
+      setStatusType("idle");
+      await loadVisualizations(dataset_id, file_path);
+    } catch (error) {
+      const detail = error?.response?.data?.detail;
+      setExecutionError(detail || "Failed to upload or analyze dataset.");
+      setStatusMessage("Error occurred.");
+      setStatusType("error");
+    } finally {
+      setIsDetecting(false);
+    }
   }
 
   async function loadVisualizations(nextDatasetId, nextInputPath) {
@@ -284,10 +334,8 @@ function App() {
     }
 
     setFile(selectedFile);
-    setInputFilePath(selectedFile.name);
     setFileError("");
     await buildSuggestionsFromFile(selectedFile);
-    await loadVisualizations(datasetId, selectedFile.name);
   }
 
   async function handleDrop(event) {
@@ -483,6 +531,12 @@ function App() {
               {file && (
                 <p className="mt-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
                   Selected file: {file.name}
+                </p>
+              )}
+              {isDetecting && (
+                <p className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-blue-600">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  Uploading and analyzing...
                 </p>
               )}
               {fileError && <p className="mt-3 text-sm font-medium text-rose-600">{fileError}</p>}
