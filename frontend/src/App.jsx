@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Bot, CloudUpload, FileText, Gauge, RefreshCcw, Sparkles, Type, Copy } from "lucide-react";
 import { executeCleaning, fetchReportHtml, fetchVisualizations, uploadDataset, fetchDetect } from "./api";
+import { ResolutionModal } from "./components/ResolutionModal";
 
 const MAX_FILE_SIZE_MB = 50;
 const MAX_FILE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -161,6 +162,20 @@ function generateMockSuggestionsFromCsv(csvText) {
 }
 */
 
+// Issue types that require the user to pick a standardization option before cleaning
+const RESOLUTION_REQUIRED_TYPES = new Set([
+  "DATE_FORMAT_INCONSISTENCY",
+  "TURKISH_CHARACTER_MISMATCH",
+  "NUMBER_FORMAT_INCONSISTENCY",
+]);
+
+function needsResolutionModal(item) {
+  if (item.action !== "review_column") return false;
+  if (RESOLUTION_REQUIRED_TYPES.has(item.issue_type)) return true;
+  if (item.issue_type === "CONTACT_FORMAT_ISSUES" && item.metrics?.contact_type === "phone") return true;
+  return false;
+}
+
 const ISSUE_TYPE_TO_CATEGORY = {
   missing_values: "missing_values",
   type_mismatch: "formatting_types",
@@ -173,6 +188,14 @@ const ISSUE_TYPE_TO_CATEGORY = {
   SKEWED_DISTRIBUTION: "outliers",
   LOW_VARIANCE: "formatting_types",
   HIGH_CORRELATION: "formatting_types",
+  DATE_FORMAT_INCONSISTENCY: "formatting_types",
+  TURKISH_CHARACTER_MISMATCH: "formatting_types",
+  WHITESPACE_ISSUES: "formatting_types",
+  NUMBER_FORMAT_INCONSISTENCY: "formatting_types",
+  CONTACT_FORMAT_ISSUES: "formatting_types",
+  SEMANTIC_ENTITY_GROUPS: "semantic",
+  UNIT_INCONSISTENCY: "semantic",
+  MEANINGLESS_COLUMN_NAME: "formatting_types",
 };
 
 const ACTION_OPTIONS = {
@@ -190,11 +213,14 @@ function mapBackendSuggestion(s) {
     action,
     column: s.column || "Dataset",
     reason: s.explanation,
+    issue_type: s.issue_type,
     type: s.issue_type,
     category: ISSUE_TYPE_TO_CATEGORY[s.issue_type] || "formatting_types",
     actionOptions: ACTION_OPTIONS[action] || [action],
     lower_bound: s.metrics?.lower_bound,
     upper_bound: s.metrics?.upper_bound,
+    metrics: s.metrics || {},
+    explanation: s.explanation,
   };
 }
 
@@ -248,6 +274,9 @@ function App() {
   const [visualizationError, setVisualizationError] = useState("");
   const [isVisualizationLoading, setIsVisualizationLoading] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [llmInfo, setLlmInfo] = useState(null);
+  const [modalSuggestion, setModalSuggestion] = useState(null);
+  const [resolutionParamsMap, setResolutionParamsMap] = useState({});
   const dragCounterRef = useRef(0);
 
   const approvedActions = useMemo(
@@ -255,6 +284,11 @@ function App() {
       suggestions
         .filter((item) => decisionMap[item.id] === "approved")
         .map((item) => {
+          // Use resolved action+params if user configured via modal
+          const resolution = resolutionParamsMap[item.id];
+          if (resolution) {
+            return { action: resolution.action, column: item.column, params: resolution.params };
+          }
           const chosenAction = selectedActionMap[item.id] ?? item.action;
           const payload = { action: chosenAction, column: item.column };
           if (chosenAction === "clip_outliers" || chosenAction === "drop_outliers") {
@@ -266,7 +300,7 @@ function App() {
           }
           return payload;
         }),
-    [decisionMap, selectedActionMap, suggestions],
+    [decisionMap, selectedActionMap, suggestions, resolutionParamsMap],
   );
 
   async function buildSuggestionsFromFile(nextFile) {
@@ -277,7 +311,9 @@ function App() {
       const { dataset_id, file_path } = await uploadDataset(nextFile);
       setDatasetId(dataset_id);
       setInputFilePath(file_path);
-      const { suggestions: raw } = await fetchDetect(dataset_id, file_path);
+      const detectResult = await fetchDetect(dataset_id, file_path);
+      const { suggestions: raw, llm_used, llm_model } = detectResult;
+      setLlmInfo({ used: llm_used, model: llm_model });
       const mapped = raw.map(mapBackendSuggestion);
       setSuggestions(mapped);
       setDecisionMap(mapped.reduce((acc, item) => { acc[item.id] = "approved"; return acc; }, {}));
@@ -391,6 +427,9 @@ function App() {
     setVisualizationData(null);
     setVisualizationError("");
     setIsVisualizationLoading(false);
+    setLlmInfo(null);
+    setModalSuggestion(null);
+    setResolutionParamsMap({});
   }
 
   async function waitForReport(derivedReportName) {
@@ -474,6 +513,7 @@ function App() {
       outliers: [],
       formatting_types: [],
       duplicates: [],
+      semantic: [],
     };
     suggestions.forEach((item) => {
       const key = item.category || "missing_values";
@@ -488,6 +528,7 @@ function App() {
     { key: "outliers", title: "Outliers", icon: AlertTriangle, tone: "text-rose-700" },
     { key: "formatting_types", title: "Formatting & Types", icon: Type, tone: "text-violet-700" },
     { key: "duplicates", title: "Duplicates", icon: Copy, tone: "text-emerald-700" },
+    { key: "semantic", title: "Semantic Issues", icon: Sparkles, tone: "text-amber-700" },
   ];
 
   return (
@@ -579,8 +620,19 @@ function App() {
                 <p className="mt-1 text-sm text-slate-500">Review each mock AI action, choose Approve/Reject, then optionally override the action type.</p>
               </div>
             </div>
-            <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              Only approved actions are sent to the backend
+            <div className="flex items-center gap-2">
+              {llmInfo?.used ? (
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  AI-powered · {llmInfo.model}
+                </span>
+              ) : llmInfo !== null ? (
+                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                  Rule-based · AI unavailable
+                </span>
+              ) : null}
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                Only approved actions are sent to the backend
+              </span>
             </div>
           </div>
 
@@ -634,17 +686,31 @@ function App() {
                             </select>
                           </label>
                           <div className="mt-4 flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setDecisionMap((prev) => ({ ...prev, [item.id]: "approved" }))}
-                              className={`rounded-lg px-3 py-2 text-xs font-semibold ${
-                                state === "approved"
-                                  ? "bg-emerald-600 text-white"
-                                  : "bg-white text-emerald-700 ring-1 ring-emerald-300"
-                              }`}
-                            >
-                              Approve
-                            </button>
+                            {needsResolutionModal(item) ? (
+                              <button
+                                type="button"
+                                onClick={() => setModalSuggestion(item)}
+                                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                                  resolutionParamsMap[item.id]
+                                    ? "bg-emerald-600 text-white"
+                                    : "bg-violet-600 text-white hover:bg-violet-700"
+                                }`}
+                              >
+                                {resolutionParamsMap[item.id] ? "✓ Configured" : "Configure →"}
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setDecisionMap((prev) => ({ ...prev, [item.id]: "approved" }))}
+                                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
+                                  state === "approved"
+                                    ? "bg-emerald-600 text-white"
+                                    : "bg-white text-emerald-700 ring-1 ring-emerald-300"
+                                }`}
+                              >
+                                Approve
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => setDecisionMap((prev) => ({ ...prev, [item.id]: "rejected" }))}
@@ -785,6 +851,21 @@ function App() {
             <iframe title="AutoEDA Report" className="h-full w-full" srcDoc={reportHtml} />
           </div>
         </div>
+      )}
+
+      {modalSuggestion && (
+        <ResolutionModal
+          suggestion={modalSuggestion}
+          onConfirm={(action, params) => {
+            setResolutionParamsMap((prev) => ({
+              ...prev,
+              [modalSuggestion.id]: { action, params },
+            }));
+            setDecisionMap((prev) => ({ ...prev, [modalSuggestion.id]: "approved" }));
+            setModalSuggestion(null);
+          }}
+          onClose={() => setModalSuggestion(null)}
+        />
       )}
     </main>
   );

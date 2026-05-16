@@ -1,0 +1,61 @@
+transaction_id,customer_name,age,salary,quality_score,quality_backup,status,notes,city,department,email,phone,registration_date,revenue,university,distance,mixed_data,col1
+TXN-1000,Customer_0,999.0,181327.0,100.366,100.3644,active,,şırnak,Engineering,notanemail,+90-500-000-0000,17/04/2021,"64.434,68",IEU,157 km,803,0
+TXN-1000,Customer_0,999.0,181327.0,100.366,100.3644,active,,şırnak,Engineering,notanemail,+90-500-000-0000,17/04/2021,"64.434,68",IEU,157 km,803,0
+TXN-1002,Customer_2,21.0,10533.97,99.953,99.9496,active,,Şırnak, Sales,user2@company.com,500 002 6674,18/03/2024,"28.323,76",Izmir Uni,408 miles,859,2
+TXN-1003,Customer_3,37.0,7303.54,100.334,100.329,active,,İzmir,HR,@nodomain,+90-500-004-0011,19/10/2022,"67.081,42",METU,447 km,854,3
+TXN-1004,Customer_4,35.0,1357.0,99.663,99.6652,active,,izmir,Finance,user4@company.com,0500-0053348,08/08/2022,"33.758,55",ODTÜ,117 m,786,4
+TXN-1005,Customer_5,,1356.77,99.855,99.8572,active,,Çanakkale,Engineering,user5@company.com,500 006 6685,07/02/2019,"53.967,87",Middle East Tech,115 miles,301,5
+TXN-1006,Customer_6,28.0,478.71,100.17,100.1747,active,,Canakkale,Marketing ,user6@company.com,+90-500-008-0022,22/07/2021,"91.480,28",Bogazici,13 km,472,6
+TXN-1007,Customer_7,26.0,16089.85,100.202,100.2046,active,,Ankara, Sales,user7@company.com,0500-0093359,14/07/2022,"86.149,33",Boğaziçi,338 m,541,7
+TXN-1008,Customer_8,54.0,7352.66,100.184,100.1841,active,,Istanbul,HR,notanemail,500 010 6696,28/12/2019,"18.306,86",Istanbul Uni,99 miles,171,8
+TXN-1009,Customer_9,25.0,9850.0,99.571,99.5671,active,,şırnak,Finance,user9@company.com,+90-500-012-0033,22/11/2024,"48.121,82",IEU,205 km,780,9
+TXN-1010,Customer_10,,166.39,100.135,100.1363,active,,sirnak,Engineering,user10@company.com,0500-0133370,04/01/2022,"34.901,22",İzmir Ekonomi,169 m,438,10
+TXN-1011,Customer_11,47.0,28028.46,100.034,100.0374,active,,Şırnak,Marketing ,@nodomain,500 014 6707,24/06/2019,"10.319,11",Izmir Uni,143 miles,738,11
+TXN-1012,Customer_12,22.0,117930.0,99.745,99.7451,active,,İzmir, Sales,user12@company.com,+90-500-016-0044,08/04/2020,"79.400,73",METU,443 km,421,12
+TXN-1013,Customer_13,21.0,1909.5,99.962,99.959,active,,izmir,HR,user13@company.com,0500-0173381,18/08/2020,"67.340,20",ODTÜ,36 m,779,13
+TXN-1014,Customer_14,25.0,1605.43,99.77,99.7687,active,,Çanakkale,Finance,user14@company.com,500 018 6718,14/03/2021,"33.575,97",Middle East Tech,496 miles,968,14
+TXN-1015,Customer_15,,1620.89,100.425,100.4216,active,,Canakkale,Engineering,user15@company.com,+90-500-020-0055,15/04/2019,"76.710,78",Bogazici,396 km,227,15
+TXN-1016,Customer_16,34.0,2902.03,100.188,100.1925,active,,Ankara,Marketing ,notanemail,0500-0213392,15/09/2019,"59.651,24",Boğaziçi,143 m,837,16
+TXN-1017,Customer_17,52.0,5951.42,99.72,99.7242,active,,Istanbul, Sales,user17@company.com,500 022 6729,02/11/2023,"48.491,82",Istanbul Uni,180 miles,407,17
+TXN-1018,Customer_18,58.0,4524.3,99.824,99.8282,active,,şırnak,HR,user18@company.com,+90-500-024-0066,27/01/2019,"10.870,27",IEU,329 km,619,18
+TXN-1019,Customer_19,21.0,2753.78,100.268,100.269,active,,sirnak,Finance,@nodomain,0500-0253403,25/04/2020,"16.771,95",İzmir Ekonomi,261 m,416,19
+TXN-1020,Customer_20,,7570.97,99.556,99.5559,active,,Şırnak,Engineering,user20@company.com,500 026 6740,14/08/2022,"89.479,58",Izmir Uni,205 miles,782,20
+TXN-1021,Customer_21,32.0,1201.88,100.322,100.3181,active,,İzmir,Marketing ,user21@company.com,+90-500-028-0077,07/07/2019,"91.353,57",METU,348 km,518,21
+TXN-1022,Customer_22,54.0,2764.12,100.305,100.3036,active,,izmir, Sales,user22@company.com,0500-0293414,06/07/2019,"59.103,13",ODTÜ,432 m,434,22
+TXN-1023,Customer_23,46.0,3650.22,99.901,99.9059,active,,Çanakkale,HR,user23@company.com,500 030 6751,13/05/2022,"85.113,55",Middle East Tech,275 miles,512,23
+TXN-1024,Customer_24,34.0,90458.0,99.566,99.5691,active,,Canakkale,Finance,notanemail,+90-500-032-0088,10/07/2024,"62.425,86",Bogazici,170 km,813,24
+TXN-1025,Customer_25,,12303.49,100.413,100.4104,active,,Ankara,Engineering,user25@company.com,0500-0333425,24/09/2024,"23.328,44",Boğaziçi,481 m,402,25
+TXN-1026,Customer_26,57.0,1781.89,100.067,100.0644,active,,Istanbul,Marketing ,user26@company.com,500 034 6762,23/08/2020,"21.470,10",Istanbul Uni,15 miles,667,26
+TXN-1027,Customer_27,37.0,5776.23,100.218,100.2187,active,,şırnak, Sales,@nodomain,+90-500-036-0099,07/05/2020,"37.743,25",IEU,60 km,230,27
+TXN-1028,Customer_28,20.0,7180.04,99.713,99.7088,active,,sirnak,HR,user28@company.com,0500-0373436,02/10/2024,"90.908,33",İzmir Ekonomi,450 m,296,28
+TXN-1029,Customer_29,30.0,380.51,99.999,100.0013,active,,Şırnak,Finance,user29@company.com,500 038 6773,18/01/2024,"81.651,01",Izmir Uni,497 miles,530,29
+TXN-1030,Customer_30,47.0,7482.66,100.385,100.3882,active,,İzmir,Engineering,user30@company.com,+90-500-040-0110,11/01/2019,"87,463.23",METU,134 km,780,30
+TXN-1031,Customer_31,41.0,1495.69,100.143,100.1478,active,,izmir,Marketing ,user31@company.com,0500-0413447,19/08/2023,"90,903.22",ODTÜ,92 m,488,31
+TXN-1032,Customer_32,37.0,538.11,99.643,99.6433,active,,Çanakkale, Sales,notanemail,500 042 6784,28/09/2020,"28,906.89",Middle East Tech,298 miles,793,32
+TXN-1033,Customer_33,29.0,23789.5,99.64,99.6363,active,,Canakkale,HR,user33@company.com,+90-500-044-0121,02/09/2019,"32,457.68",Bogazici,493 km,866,33
+TXN-1034,Customer_34,33.0,26965.04,100.245,100.2466,active,,Ankara,Finance,user34@company.com,0500-0453458,28/03/2019,"19,251.43",Boğaziçi,136 m,278,34
+TXN-1035,Customer_35,41.0,13218.65,100.039,100.0435,active,,Istanbul,Engineering,@nodomain,500 046 6795,20/02/2024,"80,210.46",Istanbul Uni,20 miles,730,35
+TXN-1036,Customer_36,26.0,192108.0,100.247,100.2437,active,,şırnak,Marketing ,user36@company.com,+90-500-048-0132,28/04/2022,"89,572.12",IEU,56 km,682,36
+TXN-1037,Customer_37,25.0,822.22,99.928,99.9283,active,,sirnak, Sales,user37@company.com,0500-0493469,04/10/2020,"46,573.97",İzmir Ekonomi,306 m,408,37
+TXN-1038,Customer_38,44.0,9222.01,100.084,100.0851,active,,Şırnak,HR,user38@company.com,500 050 6806,19/10/2019,"65,859.54",Izmir Uni,223 miles,515,38
+TXN-1039,Customer_39,26.0,4640.73,99.862,99.8666,active,,İzmir,Finance,user39@company.com,+90-500-052-0143,20/02/2022,"23,909.80",METU,177 km,661,39
+TXN-1040,Customer_40,42.0,1041.22,100.497,100.5013,active,,izmir,Engineering,notanemail,0500-0533480,2023-10-22,"93,689.29",ODTÜ,374 m,text_40,40
+TXN-1041,Customer_41,42.0,5468.38,99.638,99.6406,active,,Çanakkale,Marketing ,user41@company.com,500 054 6817,2021-06-17,"87,814.51",Middle East Tech,403 miles,text_41,41
+TXN-1042,Customer_42,58.0,279.95,99.994,99.9959,active,,Canakkale, Sales,user42@company.com,+90-500-056-0154,2024-11-07,"97,858.54",Bogazici,161 km,text_42,42
+TXN-1043,Customer_43,36.0,19203.38,100.256,100.2581,active,,Ankara,HR,@nodomain,0500-0573491,2021-04-11,"82,969.45",Boğaziçi,224 m,text_43,43
+TXN-1044,Customer_44,22.0,2395.66,100.361,100.36,active,,Istanbul,Finance,user44@company.com,500 058 6828,2024-03-13,"89,327.46",Istanbul Uni,311 miles,text_44,44
+TXN-1045,Customer_45,49.0,8690.05,99.653,99.6547,active,,şırnak,Engineering,user45@company.com,+90-500-060-0165,2022-05-21,"12,230.77",IEU,262 km,text_45,45
+TXN-1046,Customer_46,54.0,2988.37,99.66,99.6587,active,,sirnak,Marketing ,user46@company.com,0500-0613502,2019-02-11,"76,290.80",İzmir Ekonomi,60 m,text_46,46
+TXN-1047,Customer_47,27.0,5872.89,100.18,100.184,active,,Şırnak, Sales,user47@company.com,500 062 6839,2023-10-15,"39,896.69",Izmir Uni,198 miles,text_47,47
+TXN-1048,Customer_48,44.0,110512.0,100.096,100.0955,active,,İzmir,HR,notanemail,+90-500-064-0176,2023-02-04,"93,773.43",METU,461 km,text_48,48
+TXN-1049,Customer_49,25.0,1635.11,99.885,99.8825,active,,izmir,Finance,user49@company.com,0500-0653513,2021-09-07,"82,201.16",ODTÜ,296 m,text_49,49
+TXN-1050,Customer_50,55.0,27942.46,100.096,100.0916,active,,Çanakkale,Engineering,user50@company.com,500 066 6850,2019-06-05,"87,765.76",Middle East Tech,98 miles,text_50,50
+TXN-1051,Customer_51,38.0,11937.96,99.968,99.9632,active,,Canakkale,Marketing ,@nodomain,+90-500-068-0187,2021-06-08,"82,967.44",Bogazici,131 km,text_51,51
+TXN-1052,Customer_52,60.0,22440.76,99.751,99.7515,active,,Ankara, Sales,user52@company.com,0500-0693524,2023-08-06,"34,012.51",Boğaziçi,23 m,text_52,52
+TXN-1053,Customer_53,59.0,18017.22,100.053,100.0539,active,,Istanbul,HR,user53@company.com,500 070 6861,2023-05-23,"80,863.71",Istanbul Uni,363 miles,text_53,53
+TXN-1054,Customer_54,43.0,7288.44,100.442,100.4371,active,,şırnak,Finance,user54@company.com,+90-500-072-0198,2023-11-26,"19,728.61",IEU,224 km,text_54,54
+TXN-1055,Customer_55,56.0,20395.48,100.18,100.1821,active,,sirnak,Engineering,user55@company.com,0500-0733535,2023-11-01,"88,495.01",İzmir Ekonomi,1 m,text_55,55
+TXN-1056,Customer_56,32.0,741.24,99.615,99.6106,active,,Şırnak,Marketing ,notanemail,500 074 6872,2019-11-10,"87,273.39",Izmir Uni,267 miles,text_56,56
+TXN-1057,Customer_57,24.0,1745.08,100.385,100.3807,active,,İzmir, Sales,user57@company.com,+90-500-076-0209,2019-05-05,"30,019.03",METU,474 km,text_57,57
+TXN-1058,Customer_58,22.0,370.26,100.251,100.2463,active,,izmir,HR,user58@company.com,0500-0773546,2023-12-04,"83,492.79",ODTÜ,413 m,text_58,58
+TXN-1059,Customer_59,34.0,3148.26,100.269,100.2673,active,,Çanakkale,Finance,@nodomain,500 078 6883,2021-05-05,"51,427.29",Middle East Tech,276 miles,text_59,59

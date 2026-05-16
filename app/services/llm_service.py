@@ -6,6 +6,87 @@ This file does not modify data.
 The rule engine decides severity and suggested_action.
 """
 
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def generate_explanations(issues: list) -> tuple[list[dict], dict]:
+    """
+    Returns (explanations, metadata).
+    metadata = {"llm_used": bool, "llm_model": str | None}
+    Falls back to rule-based templates if GROQ_API_KEY is missing or call fails.
+    """
+    if not issues:
+        return [], {"llm_used": False, "llm_model": None}
+
+    from app.core.config import settings
+
+    if settings.GROQ_API_KEY:
+        try:
+            explanations = _generate_with_groq(issues)
+            return explanations, {"llm_used": True, "llm_model": "llama-3.3-70b-versatile"}
+        except Exception as e:
+            logger.warning(f"Groq LLM call failed, using fallback explanations: {e}")
+
+    return [generate_fallback_explanation(issue) for issue in issues], {"llm_used": False, "llm_model": None}
+
+
+def _generate_with_groq(issues: list) -> list[dict]:
+    from groq import Groq
+    from app.core.config import settings
+
+    client = Groq(api_key=settings.GROQ_API_KEY)
+
+    simplified = [
+        {
+            "column": i.get("column") or "dataset",
+            "issue_type": i.get("issue_type"),
+            "severity": i.get("severity"),
+            "suggested_action": i.get("suggested_action"),
+            "description": i.get("description", ""),
+            "metrics": i.get("metrics", {}),
+        }
+        for i in issues
+    ]
+
+    system_prompt = (
+        "You are a data quality expert helping non-technical users understand issues in their CSV dataset. "
+        "Always respond with valid JSON only, no markdown, no explanation outside the JSON."
+    )
+
+    user_prompt = f"""For each data quality issue below, produce an explanation object with exactly these fields:
+- "explanation": What the problem is in plain English. Mention the column name and key numbers. (1-2 sentences)
+- "recommendation_reason": Why this matters and why the suggested action is appropriate. (1-2 sentences)
+- "user_warning": One specific thing to verify before approving this action. (1 sentence)
+
+Be concise, non-technical, and accurate. Use exact column names and metric values from the input. Do not invent numbers.
+
+Respond with a JSON object: {{"explanations": [<array of {len(simplified)} objects in input order>]}}
+
+Issues:
+{json.dumps(simplified, indent=2)}"""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.1,
+        max_tokens=4096,
+    )
+
+    raw = response.choices[0].message.content.strip()
+    parsed = json.loads(raw)
+    result = parsed.get("explanations", parsed) if isinstance(parsed, dict) else parsed
+
+    if not isinstance(result, list) or len(result) != len(issues):
+        raise ValueError(f"Expected list of {len(issues)} explanations, got: {type(result).__name__} len={len(result) if isinstance(result, list) else 'N/A'}")
+
+    return result
+
 
 def generate_fallback_explanation(issue: dict) -> dict:
     """
@@ -203,6 +284,132 @@ def generate_fallback_explanation(issue: dict) -> dict:
             "user_warning": (
                 "Dropping a column is permanent. Confirm which of the correlated pair "
                 "is more meaningful to retain before approving."
+            ),
+        }
+
+    if issue_type == "DATE_FORMAT_INCONSISTENCY":
+        detected_formats = metrics.get("detected_formats", [])
+        formats_str = ", ".join(detected_formats) if detected_formats else "multiple formats"
+        return {
+            "explanation": (
+                f"Column '{column}' contains dates written in {len(detected_formats) if detected_formats else 'multiple'} "
+                f"different formats ({formats_str}). This causes inconsistent parsing and comparison errors."
+            ),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Mixed date formats silently produce wrong results when sorting, filtering, or computing date differences."
+            ),
+            "user_warning": (
+                "Verify which format is correct for your data before standardizing — "
+                "ambiguous dates like 01/02/2023 could be January 2nd or February 1st."
+            ),
+        }
+
+    if issue_type == "TURKISH_CHARACTER_MISMATCH":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' contains the same values written with and without Turkish characters (e.g., 'şırnak' vs 'sirnak')."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Turkish/ASCII character variants are treated as different values, causing incorrect grouping, counting, and joins."
+            ),
+            "user_warning": (
+                "Decide on a canonical form (Turkish or ASCII) before normalizing — "
+                "ensure consistency with how this column is used in downstream systems."
+            ),
+        }
+
+    if issue_type == "WHITESPACE_ISSUES":
+        affected_count = metrics.get("affected_count", 0)
+        affected_ratio = metrics.get("affected_ratio", 0)
+        affected_pct = round(affected_ratio * 100, 1)
+        return {
+            "explanation": (
+                f"Column '{column}' has {affected_count} values ({affected_pct}%) with leading, trailing, "
+                "or multiple internal spaces. These invisible characters cause failed string matches and duplicates."
+            ),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Whitespace inconsistencies make identical values appear different, breaking grouping and joins."
+            ),
+            "user_warning": (
+                "Trimming is generally safe, but verify that no values intentionally start/end with spaces."
+            ),
+        }
+
+    if issue_type == "NUMBER_FORMAT_INCONSISTENCY":
+        european = metrics.get("european_count", 0)
+        american = metrics.get("american_count", 0)
+        return {
+            "explanation": (
+                f"Column '{column}' mixes European number format (e.g., 1.234,56) and American format (e.g., 1,234.56). "
+                f"Found {european} European-style and {american} American-style values."
+            ),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Mixed number separators cause incorrect numeric parsing — 1.000 means one thousand in Europe but one in America."
+            ),
+            "user_warning": (
+                "Identify the intended format before converting — check the data source's locale settings."
+            ),
+        }
+
+    if issue_type == "CONTACT_FORMAT_ISSUES":
+        contact_type = metrics.get("contact_type", "contact")
+        invalid_count = metrics.get("invalid_count", 0)
+        return {
+            "explanation": issue.get("description", f"Column '{column}' appears to be a {contact_type} column but contains {invalid_count} invalid or inconsistently formatted values."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                f"Invalid {contact_type} formats cause delivery failures and cannot be used for communication or validation."
+            ),
+            "user_warning": (
+                f"Review invalid {contact_type} values manually before removing — they may be data entry errors that can be corrected."
+            ),
+        }
+
+    if issue_type == "SEMANTIC_ENTITY_GROUPS":
+        groups = metrics.get("groups", [])
+        n_groups = len(groups)
+        example = f" (e.g., {groups[0]})" if groups else ""
+        return {
+            "explanation": (
+                f"Column '{column}' contains {n_groups} group(s) of values that likely refer to the same entity{example}. "
+                "These are detected as semantic duplicates — different spellings, languages, or abbreviations of the same concept."
+            ),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Semantic duplicates inflate unique value counts, break grouping operations, and distort frequency analysis."
+            ),
+            "user_warning": (
+                "Review each group carefully — choose one canonical form before normalizing. "
+                "Not all similar-looking values are guaranteed to be the same entity."
+            ),
+        }
+
+    if issue_type == "UNIT_INCONSISTENCY":
+        quantity = metrics.get("quantity_type", "quantity")
+        unit_groups = metrics.get("unit_groups", [])  # noqa: F841
+        return {
+            "explanation": issue.get("description", f"Column '{column}' contains values measuring the same {quantity or 'quantity'} in different units."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Mixed units make numeric comparisons and aggregations meaningless without conversion."
+            ),
+            "user_warning": (
+                "Choose a target unit and convert all values before analysis. "
+                "Verify conversion factors carefully — unit errors compound silently."
+            ),
+        }
+
+    if issue_type == "MEANINGLESS_COLUMN_NAME":
+        return {
+            "explanation": issue.get("description", f"Column '{column}' has a generic name that provides no information about its content."),
+            "recommendation_reason": (
+                f"The system classified this as a {severity} issue. "
+                "Meaningless column names make the dataset hard to interpret and increase the risk of misuse."
+            ),
+            "user_warning": (
+                "Rename this column to reflect its actual content before sharing or publishing the dataset."
             ),
         }
 

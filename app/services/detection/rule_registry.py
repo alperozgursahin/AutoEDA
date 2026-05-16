@@ -23,6 +23,13 @@ from app.services.detection.statistical_rules import (
     detect_low_variance_columns,
     detect_high_correlation_pairs,
 )
+from app.services.detection.normalization_rules import (
+    detect_date_format_inconsistency,
+    detect_turkish_character_issues,
+    detect_whitespace_issues,
+    detect_number_format_inconsistency,
+    detect_contact_format_issues,
+)
 
 _STRUCTURAL_STATISTICAL_RULES = [
     detect_duplicate_rows,
@@ -34,6 +41,11 @@ _STRUCTURAL_STATISTICAL_RULES = [
     detect_skewed_distributions,
     detect_low_variance_columns,
     detect_high_correlation_pairs,
+    detect_date_format_inconsistency,
+    detect_turkish_character_issues,
+    detect_whitespace_issues,
+    detect_number_format_inconsistency,
+    detect_contact_format_issues,
 ]
 
 

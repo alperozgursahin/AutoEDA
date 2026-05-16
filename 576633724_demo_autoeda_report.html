@@ -1,0 +1,49 @@
+
+    <html>
+        <head>
+            <title>Data Cleaning Report: 576633724_demo_autoeda</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f7f6; color: #333; }
+                h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+                .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+                .stat-box { background-color: #e9ecef; padding: 15px; border-radius: 8px; text-align: center; border-left: 5px solid #3498db; }
+                .score-box { background-color: #e9ecef; padding: 15px; border-radius: 8px; text-align: center; border-left: 5px solid #28a745; }
+                .score { font-size: 1.5em; font-weight: bold; color: #2c3e50; }
+                .actions { margin-top: 30px; background-color: #eaf2f8; padding: 15px; border-radius: 8px; }
+                ul { line-height: 1.6; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Data Cleaning Report for 576633724_demo_autoeda</h1>
+                
+                <div class="stats-grid">
+                    <div class="score-box">
+                        <p>Pre-Cleaning Score</p>
+                        <p class="score">0.0/100</p>
+                    </div>
+                    <div class="score-box">
+                        <p>Post-Cleaning Score</p>
+                        <p class="score">100.0/100</p>
+                    </div>
+                    <div class="stat-box">
+                        <p><strong>Rows:</strong> 60 &rarr; 59</p>
+                        <p><strong>Columns:</strong> 18 &rarr; 7</p>
+                    </div>
+                    <div class="stat-box">
+                        <p><strong>Missing Values Fixed:</strong> 65</p>
+                        <p>Total Remaining: 0</p>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <h3>Applied Actions:</h3>
+                    <ul>
+                        <li>fill_median on <b>age</b></li><li>drop_column on <b>notes</b></li><li>drop_duplicates on <b>Dataset</b></li><li>drop_column on <b>status</b></li><li>drop_column on <b>notes</b></li><li>drop_column on <b>transaction_id</b></li><li>drop_column on <b>customer_name</b></li><li>drop_column on <b>phone</b></li><li>drop_column on <b>registration_date</b></li><li>drop_column on <b>revenue</b></li><li>drop_column on <b>distance</b></li><li>drop_column on <b>mixed_data</b></li><li>drop_column on <b>mixed_data</b></li><li>clip_outliers on <b>age</b></li><li>clip_outliers on <b>salary</b></li><li>clip_outliers on <b>age</b></li><li>clip_outliers on <b>salary</b></li><li>drop_column on <b>quality_score</b></li><li>drop_column on <b>quality_backup</b></li><li>drop_column on <b>quality_score</b></li><li>review_column on <b>registration_date</b></li><li>review_column on <b>city</b></li><li>review_column on <b>university</b></li><li>trim_whitespace on <b>department</b></li><li>review_column on <b>revenue</b></li><li>review_column on <b>email</b></li><li>review_column on <b>phone</b></li><li>review_column on <b>col1</b></li><li>review_column on <b>city</b></li><li>review_column on <b>university</b></li><li>review_column on <b>distance</b></li>
+                    </ul>
+                </div>
+            </div>
+        </body>
+    </html>
+    

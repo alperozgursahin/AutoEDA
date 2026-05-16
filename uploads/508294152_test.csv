@@ -1,0 +1,12 @@
+ID,Name,Age,Salary,Department
+1,John,28,50000,IT
+2,Jane,,60000,HR
+3,Mike,35,,Sales
+4,Anna,42,75000,Marketing
+5,Tom,,,I
+1,John,28,50000,IT
+2,Jane,unknown,60000,HR
+3,Mike,35,not_available,Sales
+4,Anna,42,75000,Marketing
+5,Tom,-,45000,IT
+6,Lisa,30,55000,Finance
