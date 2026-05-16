@@ -4,11 +4,12 @@ import pandas as pd
 from fastapi import APIRouter, status, HTTPException, Query, UploadFile, File
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.worker.tasks import execute_cleaning_task
 from app.services.visualization import build_visualization_data
 from app.services.detection.rule_registry import run_all_rules
+from app.services.detection.llm_rules import run_llm_detection_rules
 from app.services.suggestion_service import build_suggestions_from_issues
 
 router = APIRouter(prefix="/datasets", tags=["Datasets"])
@@ -22,6 +23,7 @@ class ActionItem(BaseModel):
     column: str
     lower_bound: Optional[float] = None
     upper_bound: Optional[float] = None
+    params: Optional[Dict[str, Any]] = None
 
 class ExecuteRequest(BaseModel):
     input_file_path: str
@@ -113,13 +115,25 @@ async def detect_issues(dataset_id: int, payload: DetectRequest):
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"Failed to read CSV: {e}")
 
+    from app.core.config import settings
+
     issues = run_all_rules(df, payload.expected_types)
-    suggestions = build_suggestions_from_issues(issues)
+
+    llm_issues = run_llm_detection_rules(df, settings.GROQ_API_KEY)
+    if llm_issues:
+        offset = len(issues)
+        from app.services.detection.rule_registry import _suggestion_to_issue_dict
+        for i, s in enumerate(llm_issues, start=1):
+            issues.append(_suggestion_to_issue_dict(s, offset + i))
+
+    suggestions, llm_meta = build_suggestions_from_issues(issues)
 
     return {
         "dataset_id": dataset_id,
         "total_issues": len(issues),
         "total_suggestions": len(suggestions),
+        "llm_used": llm_meta.get("llm_used", False),
+        "llm_model": llm_meta.get("llm_model"),
         "suggestions": suggestions,
     }
 

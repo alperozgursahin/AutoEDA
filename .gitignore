@@ -184,3 +184,5 @@ cython_debug/
 
 CLAUDE.md
 commits.txt
+
+.env

@@ -35,9 +35,11 @@ export async function uploadDataset(file) {
 }
 
 export async function fetchDetect(datasetId, filePath) {
-  const response = await api.post(`/datasets/${datasetId}/detect`, {
-    input_file_path: filePath,
-  });
+  const response = await api.post(
+    `/datasets/${datasetId}/detect`,
+    { input_file_path: filePath },
+    { timeout: 90000 }, // LLM explanation generation can take 20-30s for large datasets
+  );
   return response.data; // { dataset_id, total_issues, total_suggestions, suggestions }
 }
 

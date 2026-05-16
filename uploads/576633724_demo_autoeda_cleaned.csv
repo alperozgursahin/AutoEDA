@@ -1,0 +1,60 @@
+age,salary,city,department,email,university,col1
+81.0,32393.7925,şırnak,Engineering,notanemail,IEU,0
+21.0,10533.97,Şırnak, Sales,user2@company.com,Izmir Uni,2
+37.0,7303.54,İzmir,HR,@nodomain,METU,3
+35.0,1357.0,izmir,Finance,user4@company.com,ODTÜ,4
+37.0,1356.77,Çanakkale,Engineering,user5@company.com,Middle East Tech,5
+28.0,478.71,Canakkale,Marketing ,user6@company.com,Bogazici,6
+26.0,16089.85,Ankara, Sales,user7@company.com,Boğaziçi,7
+54.0,7352.66,Istanbul,HR,notanemail,Istanbul Uni,8
+25.0,9850.0,şırnak,Finance,user9@company.com,IEU,9
+37.0,233.3904,sirnak,Engineering,user10@company.com,İzmir Ekonomi,10
+47.0,28028.46,Şırnak,Marketing ,@nodomain,Izmir Uni,11
+22.0,32393.7925,İzmir, Sales,user12@company.com,METU,12
+21.0,1909.5,izmir,HR,user13@company.com,ODTÜ,13
+25.0,1605.43,Çanakkale,Finance,user14@company.com,Middle East Tech,14
+37.0,1620.89,Canakkale,Engineering,user15@company.com,Bogazici,15
+34.0,2902.03,Ankara,Marketing ,notanemail,Boğaziçi,16
+52.0,5951.42,Istanbul, Sales,user17@company.com,Istanbul Uni,17
+58.0,4524.3,şırnak,HR,user18@company.com,IEU,18
+21.0,2753.78,sirnak,Finance,@nodomain,İzmir Ekonomi,19
+37.0,7570.97,Şırnak,Engineering,user20@company.com,Izmir Uni,20
+32.0,1201.88,İzmir,Marketing ,user21@company.com,METU,21
+54.0,2764.12,izmir, Sales,user22@company.com,ODTÜ,22
+46.0,3650.22,Çanakkale,HR,user23@company.com,Middle East Tech,23
+34.0,32393.7925,Canakkale,Finance,notanemail,Bogazici,24
+37.0,12303.49,Ankara,Engineering,user25@company.com,Boğaziçi,25
+57.0,1781.89,Istanbul,Marketing ,user26@company.com,Istanbul Uni,26
+37.0,5776.23,şırnak, Sales,@nodomain,IEU,27
+20.54,7180.04,sirnak,HR,user28@company.com,İzmir Ekonomi,28
+30.0,380.51,Şırnak,Finance,user29@company.com,Izmir Uni,29
+47.0,7482.66,İzmir,Engineering,user30@company.com,METU,30
+41.0,1495.69,izmir,Marketing ,user31@company.com,ODTÜ,31
+37.0,538.11,Çanakkale, Sales,notanemail,Middle East Tech,32
+29.0,23789.5,Canakkale,HR,user33@company.com,Bogazici,33
+33.0,26965.04,Ankara,Finance,user34@company.com,Boğaziçi,34
+41.0,13218.65,Istanbul,Engineering,@nodomain,Istanbul Uni,35
+26.0,32393.7925,şırnak,Marketing ,user36@company.com,IEU,36
+25.0,822.22,sirnak, Sales,user37@company.com,İzmir Ekonomi,37
+44.0,9222.01,Şırnak,HR,user38@company.com,Izmir Uni,38
+26.0,4640.73,İzmir,Finance,user39@company.com,METU,39
+42.0,1041.22,izmir,Engineering,notanemail,ODTÜ,40
+42.0,5468.38,Çanakkale,Marketing ,user41@company.com,Middle East Tech,41
+58.0,279.95,Canakkale, Sales,user42@company.com,Bogazici,42
+36.0,19203.38,Ankara,HR,@nodomain,Boğaziçi,43
+22.0,2395.66,Istanbul,Finance,user44@company.com,Istanbul Uni,44
+49.0,8690.05,şırnak,Engineering,user45@company.com,IEU,45
+54.0,2988.37,sirnak,Marketing ,user46@company.com,İzmir Ekonomi,46
+27.0,5872.89,Şırnak, Sales,user47@company.com,Izmir Uni,47
+44.0,32393.7925,İzmir,HR,notanemail,METU,48
+25.0,1635.11,izmir,Finance,user49@company.com,ODTÜ,49
+55.0,27942.46,Çanakkale,Engineering,user50@company.com,Middle East Tech,50
+38.0,11937.96,Canakkale,Marketing ,@nodomain,Bogazici,51
+60.0,22440.76,Ankara, Sales,user52@company.com,Boğaziçi,52
+59.0,18017.22,Istanbul,HR,user53@company.com,Istanbul Uni,53
+43.0,7288.44,şırnak,Finance,user54@company.com,IEU,54
+56.0,20395.48,sirnak,Engineering,user55@company.com,İzmir Ekonomi,55
+32.0,741.24,Şırnak,Marketing ,notanemail,Izmir Uni,56
+24.0,1745.08,İzmir, Sales,user57@company.com,METU,57
+22.0,370.26,izmir,HR,user58@company.com,ODTÜ,58
+34.0,3148.26,Çanakkale,Finance,@nodomain,Middle East Tech,59

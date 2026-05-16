@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 import logging
 
@@ -66,6 +67,9 @@ def apply_cleaning(input_path: str, output_path: str, approved_actions: list) ->
         elif action == "drop_missing_rows":
             df.dropna(subset=[column], inplace=True)
             logger.info(f"Dropped rows with missing values in column '{column}'")
+        elif action == "trim_whitespace":
+            df[column] = df[column].astype(str).str.strip().str.replace(r"\s+", " ", regex=True)
+            logger.info(f"Trimmed whitespace in column '{column}'")
         elif action == "clip_outliers":
             numeric_series = pd.to_numeric(df[column], errors="coerce")
             if numeric_series.notna().sum() == 0:
@@ -88,6 +92,74 @@ def apply_cleaning(input_path: str, output_path: str, approved_actions: list) ->
             valid_mask = numeric_series.between(float(lower_bound), float(upper_bound), inclusive="both") | numeric_series.isna()
             df = df[valid_mask].copy()
             logger.info(f"Dropped outlier rows in '{column}' outside [{lower_bound}, {upper_bound}]")
+        elif action == "standardize_date_format":
+            params = action_dict.get("params") or {}
+            fmt_name = params.get("target_format", "YYYY-MM-DD")
+            fmt_map = {"DD/MM/YYYY": "%d/%m/%Y", "YYYY-MM-DD": "%Y-%m-%d", "MM/DD/YYYY": "%m/%d/%Y"}
+            target_fmt = fmt_map.get(fmt_name, "%Y-%m-%d")
+            # Parse each value by trying known formats explicitly (ISO first, then DMY, then MDY)
+            _date_fmts = [
+                "%Y-%m-%d", "%Y/%m/%d", "%Y.%m.%d",  # ISO variants
+                "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y",  # DMY variants
+                "%m/%d/%Y", "%m-%d-%Y",               # MDY variants
+            ]
+            def _parse_date(val):
+                val = str(val).strip()
+                for fmt in _date_fmts:
+                    try:
+                        return pd.to_datetime(val, format=fmt)
+                    except (ValueError, TypeError):
+                        pass
+                return pd.NaT
+            parsed = df[column].apply(_parse_date)
+            df[column] = parsed.dt.strftime(target_fmt).where(parsed.notna(), df[column])
+            logger.info(f"Standardized dates in '{column}' to {fmt_name}")
+        elif action == "normalize_turkish_chars":
+            params = action_dict.get("params") or {}
+            target = params.get("target", "ascii")
+            _tr_map = str.maketrans("şğüöçŞĞÜÖÇ", "sguocSGUOC")
+            def _normalize(val: str) -> str:
+                if not isinstance(val, str):
+                    return val
+                if target == "ascii":
+                    val = val.replace("İ", "I").replace("ı", "i")
+                    return val.translate(_tr_map).lower()
+                return val.lower()
+            df[column] = df[column].astype(str).apply(_normalize)
+            logger.info(f"Normalized Turkish characters in '{column}' (target={target})")
+        elif action == "standardize_number_format":
+            params = action_dict.get("params") or {}
+            target = params.get("target", "american")
+            _eu = re.compile(r"^-?\d{1,3}(\.\d{3})+(,\d+)?$")
+            _us = re.compile(r"^-?\d{1,3}(,\d{3})+(\.\d+)?$")
+            def _convert_num(val: str) -> str:
+                val = str(val).strip()
+                if target == "american" and _eu.match(val):
+                    return val.replace(".", "").replace(",", ".")
+                if target == "european" and _us.match(val):
+                    return val.replace(",", "X").replace(".", ",").replace("X", ".")
+                return val
+            df[column] = df[column].astype(str).apply(_convert_num)
+            logger.info(f"Standardized number format in '{column}' to {target}")
+        elif action == "standardize_phone_format":
+            params = action_dict.get("params") or {}
+            target_prefix = params.get("target_prefix", "international")
+            def _normalize_phone(val: str) -> str:
+                digits = re.sub(r"[^\d]", "", str(val))
+                if digits.startswith("90") and len(digits) >= 12:
+                    digits = digits[2:]
+                elif digits.startswith("0") and len(digits) >= 11:
+                    digits = digits[1:]
+                if len(digits) < 10:
+                    return val
+                if target_prefix == "international":
+                    # Add dash after country code so pandas reads as string, not integer
+                    return f"+90-{digits}"
+                if target_prefix == "local":
+                    return f"0{digits}"
+                return digits
+            df[column] = df[column].astype(str).apply(_normalize_phone)
+            logger.info(f"Standardized phone format in '{column}' to {target_prefix}")
 
     # Save cleaned file
     logger.info(f"Saving cleaned dataset to {output_path}")
